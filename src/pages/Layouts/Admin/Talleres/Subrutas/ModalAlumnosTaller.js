@@ -22,11 +22,15 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { green, yellow } from "@mui/material/colors";
+import { green, grey, yellow } from "@mui/material/colors";
 import axios from "axios";
 import React, { useContext, useState, useEffect } from "react";
 import { context } from "../../../../../Provider";
 import CloseIcon from "@mui/icons-material/Close";
+import ReactExport from "react-export-excel-xlsx-fix";
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const moment = require("moment");
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -140,11 +144,12 @@ function ModalAlumnosTaller({
           fecha: fechaAEnviar,
         }
       );
-      // console.log(verifAsistencia);
+      // console.log(verifAsistencia.data.listaAsistencia);
 
       let nuevoArray = [];
 
       if (verifAsistencia.data.listaAsistencia.length) {
+        console.log(verifAsistencia.data.listaAsistencia);
         verifAsistencia.data.listaAsistencia[0].Asistentes.forEach((res) => {
           nuevoArray.push({
             _id: res.alumno._id,
@@ -199,6 +204,7 @@ function ModalAlumnosTaller({
 
   let renderAlumnos = null;
   if (checked) {
+    console.log(datosAlumnoTaller);
     renderAlumnos = datosAlumnoTaller.map((datosArray, index) => (
       <StyledTableRow key={index}>
         <StyledTableCell component="th" scope="row">
@@ -239,6 +245,39 @@ function ModalAlumnosTaller({
     // eslint-disable-next-line
   }, [consulta]);
 
+  let arrayExcel = [];
+  datosAlumnosRegistrados.forEach((element) => {
+    arrayExcel.push({
+      value: element.nombre,
+      style: { font: { sz: "24", bold: true } },
+    });
+  });
+
+  const styledExcel = [
+    {
+      columns: [
+        {
+          value: "Nombre del Alumno",
+          widthPx: 160,
+          style: { font: { sz: "24", bold: true } },
+        },
+      ],
+      data: arrayExcel,
+      // [
+      //   { value: "H1", style: { font: { sz: "24", bold: true } } },
+      //   { value: "Bold", style: { font: { bold: true } } },
+      //   {
+      //     value: "Red",
+      //     style: {
+      //       fill: { patternType: "solid", fgColor: { rgb: "FFFF0000" } },
+      //     },
+      //   },
+      // ],
+    },
+  ];
+
+  console.log(styledExcel);
+
   return (
     <Dialog
       open={detallesAlumnosTaller}
@@ -259,6 +298,48 @@ function ModalAlumnosTaller({
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             Información del Taller
           </Typography>
+          {/* <Button
+            variant="contained"
+            sx={{
+              mr: "10px",
+              bgcolor: grey[100],
+              color: "green",
+              "&:hover": {
+                bgcolor: grey[50],
+                color: "green",
+              },
+            }}
+          >
+            Exportar a Excel
+          </Button> */}
+
+          {!checked ? (
+            <ExcelFile
+              element={
+                <Button
+                  variant="contained"
+                  sx={{
+                    mr: "10px",
+                    bgcolor: grey[100],
+                    color: "green",
+                    "&:hover": {
+                      bgcolor: grey[50],
+                      color: "green",
+                    },
+                  }}
+                >
+                  Exportar a Excel
+                </Button>
+              }
+            >
+              <ExcelSheet
+                dataSet={styledExcel}
+                name="Lista de Asistencia"
+              ></ExcelSheet>
+            </ExcelFile>
+          ) : (
+            <></>
+          )}
 
           {!checked ? (
             <Button

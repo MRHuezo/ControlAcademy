@@ -16,12 +16,13 @@ import { context } from "../../../../../Provider";
 import axios from "axios";
 
 function DetallesAlumno({ alumnoTaller, handleAlumnosTallerClose }) {
+  // const [tallerElegido, setTallerElegido] = useState("TALLER DE GUITARRA");
+
   const handleChange = (e, child) => {
     const { _id, nombre } = child.props.datos;
-
     setDatosTaller({
-      _id,
-      nombre,
+      _id: _id,
+      nombre: nombre,
     });
   };
 
@@ -40,6 +41,14 @@ function DetallesAlumno({ alumnoTaller, handleAlumnosTallerClose }) {
 
   // eslint-disable-next-line
   const [error, setError] = useState(false);
+
+  let mapeoTalleres;
+
+  mapeoTalleres = datosTalleres.map((taller, index) => (
+    <MenuItem key={index} value={taller.nombre} datos={taller}>
+      {taller.nombre}
+    </MenuItem>
+  ));
 
   const obtenerTalleres = async () => {
     try {
@@ -135,15 +144,13 @@ function DetallesAlumno({ alumnoTaller, handleAlumnosTallerClose }) {
               <FormControl fullWidth>
                 <InputLabel>Talleres</InputLabel>
                 <Select
-                  value={datosTaller.nombre}
+                  value={datosTaller.nombre || ""}
                   label="Talleres"
                   onChange={handleChange}
+                  defaultValue=""
+                  // value={}
                 >
-                  {datosTalleres.map((taller, index) => (
-                    <MenuItem key={index} value={taller.nombre} datos={taller}>
-                      {taller.nombre}
-                    </MenuItem>
-                  ))}
+                  {mapeoTalleres}
                 </Select>
               </FormControl>
             </Container>

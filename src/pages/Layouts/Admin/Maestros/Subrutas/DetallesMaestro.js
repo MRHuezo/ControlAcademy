@@ -1,11 +1,13 @@
 import React, { useContext } from "react";
 import {
+  AppBar,
+  Box,
   Button,
   Container,
   Dialog,
-  DialogActions,
   DialogContent,
   Grid,
+  IconButton,
   Paper,
   styled,
   Table,
@@ -15,9 +17,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Toolbar,
+  Typography,
 } from "@mui/material";
-import { blue, green } from "@mui/material/colors";
+import { green } from "@mui/material/colors";
 import { context } from "../../../../../Provider";
+import CloseIcon from "@mui/icons-material/Close";
 
 //ESTILOS DE TABLA
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -54,49 +59,84 @@ function DetallesMaestro({
       keepMounted
       onClose={handleDetallesClose}
       maxWidth="md"
+      fullScreen
     >
+      <AppBar sx={{ position: "relative" }}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="close"
+            onClick={handleDetallesClose}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            Información del Profesor
+          </Typography>
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: green[600],
+              color: "white",
+              "&:hover": {
+                bgcolor: green[400],
+                color: "white",
+              },
+            }}
+            onClick={() => handleTalleresOpen()}
+          >
+            Agregar nuevo taller
+          </Button>
+        </Toolbar>
+      </AppBar>
       <DialogContent>
         <Grid>
           <Grid container>
-            <Grid item xs={12}>
-              <b
-                style={{
-                  color: "#000",
-                  display: "block",
-                  textAlign: "center",
-                }}
-              >
-                INFORMACIÓN DEL PROFESOR
-              </b>
-            </Grid>
-            <Grid item xs={6} component={"span"}>
-              <b style={{ display: "block" }}>Nombre: {datosMaestro.nombre}</b>
-              <b style={{ display: "block" }}>
-                Fecha de Nacimiento: {datosMaestro.fecha_nacimiento}
-              </b>
-            </Grid>
-            <Grid item xs={6} component={"span"}>
-              <b style={{ display: "block" }}>Correo: {datosMaestro.correo}</b>
-              <b style={{ display: "block" }}>
-                Fecha de Ingreso: {datosMaestro.fecha_de_ingreso}
-              </b>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} component={"span"}>
-            <Button
-              onClick={() => handleTalleresOpen()}
-              variant="contained"
-              sx={{
-                bgcolor: green[600],
-                color: "white",
-                "&:hover": {
-                  bgcolor: green[400],
-                  color: "white",
-                },
+            <Box
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              Agregar nuevo taller
-            </Button>
+              <Grid
+                item
+                xs={6}
+                component={"span"}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "Column",
+                  alignItems: "flex-end",
+                  marginRight: "130px",
+                }}
+              >
+                <div>
+                  <b style={{ display: "block" }}>
+                    NOMBRE: {datosMaestro.nombre}
+                  </b>
+                  <b style={{ display: "block" }}>
+                    FECHA DE NACIMIENTO: {datosMaestro.fecha_nacimiento}
+                  </b>
+                </div>
+              </Grid>
+
+              <Grid item xs={6} component={"span"}>
+                <div sx={{ width: 220, ml: "130px" }}>
+                  <b style={{ display: "block" }}>
+                    CORREO: {datosMaestro.correo}
+                  </b>
+                  <b style={{ display: "block" }}>
+                    FECHA DE INGRESO: {datosMaestro.fecha_de_ingreso}
+                  </b>
+                </div>
+              </Grid>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} component={"span"}>
             {!datosTalleres.length ? (
               <div style={{ textAlign: "center" }}>
                 No hay nada para mostrar
@@ -146,22 +186,6 @@ function DetallesMaestro({
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleDetallesClose}
-          variant="contained"
-          sx={{
-            bgcolor: blue[600],
-            color: "white",
-            "&:hover": {
-              bgcolor: blue[400],
-              color: "white",
-            },
-          }}
-        >
-          Cerrar
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 }
