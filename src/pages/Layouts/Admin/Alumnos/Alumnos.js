@@ -44,19 +44,28 @@ function Alumnos() {
     setAlumnoTaller,
     datosAlumno,
     alumno,
+    editarAlumno,
+    formAlumno,
+    setFormAlumno,
+    state_inicial,
   } = useContext(context);
 
   const classes = useStyles();
   const [registroAlumno, setRegistroAlumno] = useState(false);
   // eslint-disable-next-line
   const [error, setError] = useState(false);
+  const [stateEditarUsuario, setStateEditarUsuario] = useState(false);
 
   const handleRegistroAlumnoOpen = () => {
     setRegistroAlumno(true);
+    setStateEditarUsuario(false);
   };
 
   const handleRegistroAlumnoClose = () => {
     setRegistroAlumno(false);
+    // setEditarAlumno([]);
+    setFormAlumno(state_inicial);
+    // setEditarAlumno(state_inicial);
   };
 
   const handleAlumnosTallerOpen = (value) => {
@@ -68,6 +77,14 @@ function Alumnos() {
     setAlumnoTaller(false);
     setDatosAlumno({});
     setDatosTaller({});
+  };
+
+  const handleEditarAlumno = (value) => {
+    setRegistroAlumno(true);
+    setFormAlumno(value);
+    setStateEditarUsuario(true);
+    // setDatosAlumno(value);
+    // setAlumnoTaller(true);
   };
 
   const token = localStorage.getItem("token");
@@ -94,12 +111,20 @@ function Alumnos() {
 
   // eslint-disable-next-line
   useEffect(() => {
-    if (datosAlumno._id) {
+    if (datosAlumno._id || !formAlumno._id) {
       obtenerAlumnos();
+      console.log("Actualizado");
     }
 
     // eslint-disable-next-line
   }, [alumno, controller]);
+
+  // eslint-disable-next-line
+  useEffect(() => {
+    console.log("Editar Alumno", editarAlumno);
+
+    // eslint-disable-next-line
+  }, [editarAlumno]);
 
   // eslint-disable-next-line
   useEffect(() => {
@@ -122,6 +147,7 @@ function Alumnos() {
       <TablaAlumno
         alumnos={alumnos}
         handleAlumnosTallerOpen={handleAlumnosTallerOpen}
+        handleEditarAlumno={handleEditarAlumno}
       />
 
       <DetallesAlumno
@@ -132,6 +158,7 @@ function Alumnos() {
       <ModalAlumno
         registroAlumno={registroAlumno}
         handleRegistroAlumnoClose={handleRegistroAlumnoClose}
+        stateEditarUsuario={stateEditarUsuario}
       />
     </>
   );

@@ -22,15 +22,16 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { green, grey, yellow } from "@mui/material/colors";
+import { green, yellow } from "@mui/material/colors";
 import axios from "axios";
 import React, { useContext, useState, useEffect } from "react";
 import { context } from "../../../../../Provider";
 import CloseIcon from "@mui/icons-material/Close";
-import ReactExport from "react-export-excel-xlsx-fix";
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+import ExcelDownload from "../../../../../components/ExcelDownload";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+// import { overflow } from "html2canvas/dist/types/css/property-descriptors/overflow";
 const moment = require("moment");
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -202,38 +203,111 @@ function ModalAlumnosTaller({
     );
   }
 
+  var indice = 1;
+  var arrayDiasEncabezado = [];
+  var arrayDiasCuerpo = [];
+  for (indice = 1; indice < 32; indice++) {
+    arrayDiasEncabezado[indice] = (
+      <StyledTableCell padding="checkbox" size="small" sx={{ width: "5px" }}>
+        {indice}
+      </StyledTableCell>
+    );
+    arrayDiasCuerpo[indice] = (
+      <StyledTableCell
+        style={{
+          border: "1px solid black",
+          padding: "0",
+          margin: 0,
+        }}
+      ></StyledTableCell>
+    );
+  }
+
   let renderAlumnos = null;
   if (checked) {
-    console.log(datosAlumnoTaller);
+    // console.log(datosAlumnoTaller);
     renderAlumnos = datosAlumnoTaller.map((datosArray, index) => (
-      <StyledTableRow key={index}>
-        <StyledTableCell component="th" scope="row">
-          {datosArray.nombre}
-        </StyledTableCell>
-        <StyledTableCell component="th" scope="row">
-          <FormControlLabel
-            control={
-              <Checkbox
-                disabled={!isToday}
-                checked={datosArray.assistence ? datosArray.assistence : false}
-                onChange={() => marcar(index)}
-                size="small"
-                sx={{ p: 0 }}
-              />
-            }
-            key={index}
-          />
-        </StyledTableCell>
-      </StyledTableRow>
+      <>
+        <StyledTableRow key={index}>
+          <StyledTableCell
+            component="th"
+            scope="row"
+            style={{ border: "1px solid black" }}
+          >
+            {index + 1}
+          </StyledTableCell>
+          <StyledTableCell
+            component="th"
+            scope="row"
+            style={{ border: "1px solid black" }}
+          >
+            {datosArray.nombre}
+          </StyledTableCell>
+          <StyledTableCell
+            component="th"
+            scope="row"
+            style={{ border: "1px solid black" }}
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  disabled={!isToday}
+                  checked={
+                    datosArray.assistence ? datosArray.assistence : false
+                  }
+                  onChange={() => marcar(index)}
+                  size="small"
+                  sx={{ p: 0 }}
+                />
+              }
+              key={index}
+            />
+          </StyledTableCell>
+        </StyledTableRow>
+      </>
     ));
   } else {
-    // console.log("Alumnos en el taller", datosAlumnosRegistrados);
+    // renderAlumnos = datosAlumnosRegistrados.map((datosArray, index) => (
+    //   <>
+    //     <StyledTableRow>
+    //       <StyledTableCell component="th" scope="row">
+    //         {datosArray.nombre}
+    //       </StyledTableCell>
+    //     </StyledTableRow>
+    //   </>
+    // ));
     renderAlumnos = datosAlumnosRegistrados.map((datosArray, index) => (
-      <StyledTableRow key={index}>
-        <StyledTableCell component="th" scope="row">
-          {datosArray.nombre}
-        </StyledTableCell>
-      </StyledTableRow>
+      <>
+        <StyledTableRow>
+          <StyledTableCell
+            component="th"
+            scope="row"
+            style={{ border: "1px solid black", width: "3px" }}
+          >
+            {index + 1}
+          </StyledTableCell>
+          <StyledTableCell
+            component="th"
+            scope="row"
+            align="center"
+            style={{ border: "1px solid black" }}
+          >
+            {datosArray.nombre}
+          </StyledTableCell>
+          <StyledTableCell
+            component="th"
+            scope="row"
+            align="center"
+            style={{
+              border: "1px solid black",
+            }}
+          >
+            {datosArray.edad}
+          </StyledTableCell>
+          {arrayDiasCuerpo}
+        </StyledTableRow>
+        {console.log(datosArray)}
+      </>
     ));
   }
 
@@ -245,38 +319,19 @@ function ModalAlumnosTaller({
     // eslint-disable-next-line
   }, [consulta]);
 
-  let arrayExcel = [];
-  datosAlumnosRegistrados.forEach((element) => {
-    arrayExcel.push({
-      value: element.nombre,
-      style: { font: { sz: "24", bold: true } },
+  const generatePDF = () => {
+    const input = document.getElementById("Lista");
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("l", "mm", "a4");
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      pdf.addImage(imgData, "JPEG", -2, 0, pdfWidth, pdfHeight);
+      // pdf.output('dataurlnewwindow');
+      pdf.save("Asistencia.pdf");
     });
-  });
-
-  const styledExcel = [
-    {
-      columns: [
-        {
-          value: "Nombre del Alumno",
-          widthPx: 160,
-          style: { font: { sz: "24", bold: true } },
-        },
-      ],
-      data: arrayExcel,
-      // [
-      //   { value: "H1", style: { font: { sz: "24", bold: true } } },
-      //   { value: "Bold", style: { font: { bold: true } } },
-      //   {
-      //     value: "Red",
-      //     style: {
-      //       fill: { patternType: "solid", fgColor: { rgb: "FFFF0000" } },
-      //     },
-      //   },
-      // ],
-    },
-  ];
-
-  console.log(styledExcel);
+  };
 
   return (
     <Dialog
@@ -298,64 +353,28 @@ function ModalAlumnosTaller({
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             Información del Taller
           </Typography>
-          {/* <Button
-            variant="contained"
-            sx={{
-              mr: "10px",
-              bgcolor: grey[100],
-              color: "green",
-              "&:hover": {
-                bgcolor: grey[50],
-                color: "green",
-              },
-            }}
-          >
-            Exportar a Excel
-          </Button> */}
 
           {!checked ? (
-            <ExcelFile
-              element={
-                <Button
-                  variant="contained"
-                  sx={{
-                    mr: "10px",
-                    bgcolor: grey[100],
-                    color: "green",
-                    "&:hover": {
-                      bgcolor: grey[50],
-                      color: "green",
-                    },
-                  }}
-                >
-                  Exportar a Excel
-                </Button>
-              }
-            >
-              <ExcelSheet
-                dataSet={styledExcel}
-                name="Lista de Asistencia"
-              ></ExcelSheet>
-            </ExcelFile>
-          ) : (
-            <></>
-          )}
-
-          {!checked ? (
-            <Button
-              variant="contained"
-              sx={{
-                bgcolor: green[600],
-                color: "white",
-                "&:hover": {
-                  bgcolor: green[400],
+            <>
+              <ExcelDownload dAR={datosAlumnosRegistrados} />
+              <Button
+                onClick={checkedAsistenciaOpen}
+                variant="contained"
+                sx={{
+                  bgcolor: green[600],
                   color: "white",
-                },
-              }}
-              onClick={checkedAsistenciaOpen}
-            >
-              {mensajeBotonAsistencia}
-            </Button>
+                  "&:hover": {
+                    bgcolor: green[400],
+                    color: "white",
+                  },
+                }}
+              >
+                {mensajeBotonAsistencia}
+              </Button>
+              <Button onClick={() => generatePDF()} sx={{ bgcolor: "white" }}>
+                Download PDF
+              </Button>
+            </>
           ) : (
             <>
               <Button
@@ -367,7 +386,7 @@ function ModalAlumnosTaller({
                   mr: "10px",
                   "&:hover": {
                     bgcolor: yellow[400],
-                    color: "white",
+                    color: "black",
                   },
                 }}
               >
@@ -428,27 +447,55 @@ function ModalAlumnosTaller({
               </Grid>
             </Box>
           </Grid>
-          <Grid item xs={12} component={"span"}>
-            <Container maxWidth="md" sx={{ mt: "20px" }}>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                  <TableHead>
-                    <TableRow style={{ userSelect: "none" }}>
-                      <StyledTableCell>Nombre del estudiante</StyledTableCell>
-                      {checked ? (
-                        <StyledTableCell>Asistencia</StyledTableCell>
-                      ) : (
-                        <></>
-                      )}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody style={{ userSelect: "none" }}>
-                    {renderAlumnos}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Container>
-          </Grid>
+
+          <Box id="Lista">
+            <br></br>
+            <Grid item xs={12} component={"span"}>
+              <Container
+                maxWidth="100%"
+                sx={{
+                  mt: "20px",
+                  border: "1px solid red",
+                  p: "0",
+                }}
+              >
+                <TableContainer maxWidth="100%" component={Paper}>
+                  <Table
+                    sx={{ minWidth: 700 }}
+                    // padding="none"
+                    aria-label="customized table"
+                    // id="TablaAlumno"
+                  >
+                    <TableHead>
+                      <TableRow style={{ userSelect: "none" }}>
+                        <StyledTableCell>No.</StyledTableCell>
+                        <StyledTableCell align="center">
+                          Nombre del estudiante
+                        </StyledTableCell>
+                        {!checked ? (
+                          <StyledTableCell maxWidth="3px">Edad</StyledTableCell>
+                        ) : (
+                          <></>
+                        )}
+
+                        {arrayDiasEncabezado}
+
+                        {checked ? (
+                          <StyledTableCell>Asistencia</StyledTableCell>
+                        ) : (
+                          <></>
+                        )}
+                      </TableRow>
+                    </TableHead>
+
+                    <TableBody style={{ userSelect: "none" }}>
+                      {renderAlumnos}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Container>
+            </Grid>
+          </Box>
         </Grid>
       </DialogContent>
     </Dialog>

@@ -1,36 +1,26 @@
 import { Button, MenuItem, Paper, TextField } from "@mui/material";
 import axios from "axios";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import Registro from "../../../../img/register.png";
 import { context } from "../../../../Provider";
 
-const state_inicial = {
-  nombre: "",
-  domicilio: "",
-  telefono: "",
-  correo: "",
-  fecha_nacimiento: "2000-08-16",
-  fecha_de_ingreso: "2022-07-18",
-  grado_estudio: "",
-  password: "",
-  admin: false,
-  rol: "ALUMNO",
-  edad: "",
-  escuela_donde_estudia: "",
-  grado: "",
-  nombre_tutor: "",
-};
-
-function RegistroAlumno({ handleRegistroAlumnoClose }) {
-  const [formAlumno, setFormAlumno] = useState(state_inicial);
+function RegistroAlumno({ handleRegistroAlumnoClose, stateEditarUsuario }) {
   // eslint-disable-next-line
   const [loading, setLoading] = useState(false);
   // eslint-disable-next-line
   const [error, setError] = useState("");
   const [alert] = useState(false);
-  const { setOpen, setMessage, setAlerta, controller, setController } =
-    useContext(context);
+  const {
+    setFormAlumno,
+    formAlumno,
+    setOpen,
+    setMessage,
+    setAlerta,
+    controller,
+    setController,
+    state_inicial,
+  } = useContext(context);
 
   const datos = (e) => {
     const { name, value } = e.target;
@@ -46,15 +36,18 @@ function RegistroAlumno({ handleRegistroAlumnoClose }) {
         return;
       } else {
         setLoading(true);
+        // eslint-disable-next-line
         const resAlumnoRegistro = await axios.post(
           `http://localhost:4000/api-v1/teacher`,
           formAlumno
         );
         // console.log(resAlumnoRegistro);
+        setController(!controller);
+        // console.log(formAlumno);
         setFormAlumno(state_inicial);
         setLoading(false);
         setError(false);
-        setController(!controller);
+
         handleRegistroAlumnoClose();
         // console.log("Alumno Registrado");
         setOpen(true);
@@ -67,6 +60,48 @@ function RegistroAlumno({ handleRegistroAlumnoClose }) {
       setError(true);
     }
   };
+
+  //Creamos una variable que se llamará editarAlumno, que será una copia de formAlumno pero no tendrá el campo de ID
+  const { _id, ...editarAlumno } = formAlumno;
+
+  const actualizarAlumno = async () => {
+    try {
+      if (!formAlumno.nombre) {
+        setOpen(true);
+        setMessage("El nombre es un campo obligatorio");
+        setAlerta("error");
+        return;
+      } else {
+        setLoading(true);
+        // eslint-disable-next-line
+        const resAlumnoActualizar = await axios.put(
+          `http://localhost:4000/api-v1/student/editarAlumno/${formAlumno._id}`,
+          editarAlumno
+        );
+        // console.log(resAlumnoActualizar);
+
+        setLoading(false);
+        setError(false);
+        setController(!controller);
+        handleRegistroAlumnoClose();
+        // console.log("Alumno Registrado");
+        setOpen(true);
+        setMessage("Alumno Actualizado");
+        setAlerta("success");
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      setError(true);
+    }
+  };
+
+  // eslint-disable-next-line
+  useEffect(() => {
+    console.log("formAlumno", formAlumno);
+
+    // eslint-disable-next-line
+  }, [editarAlumno]);
 
   const token = localStorage.getItem("token");
   if (token === null) {
@@ -176,6 +211,7 @@ function RegistroAlumno({ handleRegistroAlumnoClose }) {
               sx={{ ml: "25px", mr: "25px", mt: "15px" }}
             />
             <TextField
+              disabled={stateEditarUsuario}
               name="correo"
               value={formAlumno.correo}
               onChange={datos}
@@ -207,6 +243,7 @@ function RegistroAlumno({ handleRegistroAlumnoClose }) {
             />
 
             <TextField
+              disabled={stateEditarUsuario}
               name="password"
               value={formAlumno.password}
               onChange={datos}
@@ -270,14 +307,25 @@ function RegistroAlumno({ handleRegistroAlumnoClose }) {
               type="text"
               sx={{ ml: "25px", mr: "25px", mt: "15px" }}
             />
-            <Button
-              onClick={registroAlumno}
-              type="submit"
-              variant="contained"
-              sx={{ m: "20px", gridColumn: "1 / 3" }}
-            >
-              Registrar
-            </Button>
+            {!stateEditarUsuario ? (
+              <Button
+                onClick={registroAlumno}
+                type="submit"
+                variant="contained"
+                sx={{ m: "20px", gridColumn: "1 / 3" }}
+              >
+                Registrar
+              </Button>
+            ) : (
+              <Button
+                onClick={actualizarAlumno}
+                type="submit"
+                variant="contained"
+                sx={{ m: "20px", gridColumn: "1 / 3" }}
+              >
+                Actualizar
+              </Button>
+            )}
           </Paper>
         </div>
       </div>

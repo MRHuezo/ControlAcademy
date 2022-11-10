@@ -142,10 +142,12 @@ function GetMaestros() {
 
       let nuevoArray = [];
       mostrarAlumnos.data.estudiantes.forEach((res) => {
+        console.log(res);
         if (res.id_user !== null) {
           nuevoArray.push({
             _id: res.id_user._id,
             nombre: res.id_user.nombre,
+            edad: res.id_user.edad,
             assistence: false,
           });
         }

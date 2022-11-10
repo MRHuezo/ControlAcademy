@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Button,
   Container,
   Paper,
   styled,
@@ -11,6 +12,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { blue, green, red } from "@mui/material/colors";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -32,32 +34,108 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function TablaAlumno({ alumnos, handleAlumnosTallerOpen }) {
+function TablaAlumno({ alumnos, handleAlumnosTallerOpen, handleEditarAlumno }) {
   return (
-    <Container maxWidth="md" sx={{ mt: "20px" }}>
+    <Container maxWidth="lg" sx={{ mt: "20px", mb: "20px" }}>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Nombre del alumno</StyledTableCell>
-              <StyledTableCell>Correo</StyledTableCell>
-              <StyledTableCell>Fecha de nacimiento</StyledTableCell>
-              <StyledTableCell>Fecha de ingreso</StyledTableCell>
+              <StyledTableCell style={{ textAlign: "center" }}>
+                Nombre del alumno
+              </StyledTableCell>
+              <StyledTableCell style={{ textAlign: "center" }}>
+                Correo
+              </StyledTableCell>
+              <StyledTableCell style={{ textAlign: "center" }}>
+                Fecha de nacimiento
+              </StyledTableCell>
+              <StyledTableCell style={{ textAlign: "center" }}>
+                Fecha de ingreso
+              </StyledTableCell>
+              <StyledTableCell style={{ textAlign: "center" }}>
+                Agregar a Taller
+              </StyledTableCell>
+              <StyledTableCell style={{ textAlign: "center" }}>
+                Editar
+              </StyledTableCell>
+              <StyledTableCell style={{ textAlign: "center" }}>
+                Eliminar
+              </StyledTableCell>
             </TableRow>
           </TableHead>
-          <TableBody style={{ cursor: "pointer", userSelect: "none" }}>
+          <TableBody style={{ userSelect: "none" }}>
             {alumnos.map((alumno, index) => (
               <StyledTableRow
                 key={index}
                 alumno={alumno}
-                onClick={() => handleAlumnosTallerOpen(alumno)}
+                // onClick={() => handleAlumnosTallerOpen(alumno)}
               >
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell
+                  style={{ textAlign: "center" }}
+                  component="th"
+                  scope="row"
+                >
                   {alumno.nombre}
                 </StyledTableCell>
-                <StyledTableCell>{alumno.correo}</StyledTableCell>
-                <StyledTableCell>{alumno.fecha_nacimiento}</StyledTableCell>
-                <StyledTableCell>{alumno.fecha_de_ingreso}</StyledTableCell>
+                <StyledTableCell style={{ textAlign: "center" }}>
+                  {alumno.correo}
+                </StyledTableCell>
+                <StyledTableCell style={{ textAlign: "center" }}>
+                  {alumno.fecha_nacimiento}
+                </StyledTableCell>
+                <StyledTableCell style={{ textAlign: "center" }}>
+                  {alumno.fecha_de_ingreso}
+                </StyledTableCell>
+
+                <StyledTableCell style={{ textAlign: "center" }}>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleAlumnosTallerOpen(alumno)}
+                    sx={{
+                      bgcolor: green[600],
+                      color: "white",
+                      "&:hover": {
+                        bgcolor: green[400],
+                        color: "white",
+                      },
+                    }}
+                  >
+                    Agregar a taller
+                  </Button>
+                </StyledTableCell>
+                <StyledTableCell style={{ textAlign: "center" }}>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleEditarAlumno(alumno)}
+                    sx={{
+                      bgcolor: blue[600],
+                      color: "white",
+                      "&:hover": {
+                        bgcolor: blue[400],
+                        color: "white",
+                      },
+                    }}
+                  >
+                    Editar
+                  </Button>
+                </StyledTableCell>
+                <StyledTableCell style={{ textAlign: "center" }}>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      bgcolor: red[600],
+                      color: "white",
+                      "&:hover": {
+                        bgcolor: red[400],
+                        color: "white",
+                      },
+                    }}
+                    // onClick={() => handleAlumnosTallerOpen(alumno)}
+                  >
+                    Eliminar
+                  </Button>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

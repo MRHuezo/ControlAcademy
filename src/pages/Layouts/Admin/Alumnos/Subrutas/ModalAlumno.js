@@ -9,7 +9,11 @@ import React from "react";
 import { blue } from "@mui/material/colors";
 import RegistroAlumno from "../../Registros/RegistroAlumno";
 
-function ModalAlumno({ registroAlumno, handleRegistroAlumnoClose }) {
+function ModalAlumno({
+  registroAlumno,
+  handleRegistroAlumnoClose,
+  stateEditarUsuario,
+}) {
   return (
     <Dialog
       open={registroAlumno}
@@ -21,6 +25,7 @@ function ModalAlumno({ registroAlumno, handleRegistroAlumnoClose }) {
         <Grid>
           <RegistroAlumno
             handleRegistroAlumnoClose={handleRegistroAlumnoClose}
+            stateEditarUsuario={stateEditarUsuario}
           />
         </Grid>
       </DialogContent>

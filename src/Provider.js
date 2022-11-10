@@ -5,6 +5,23 @@ const login_inicial = {
   password: "",
 };
 
+const state_inicial = {
+  nombre: "",
+  domicilio: "",
+  telefono: "",
+  correo: "",
+  fecha_nacimiento: "2000-08-16",
+  fecha_de_ingreso: "2022-07-18",
+  grado_estudio: "",
+  password: "",
+  admin: false,
+  rol: "ALUMNO",
+  edad: "",
+  escuela_donde_estudia: "",
+  grado: "",
+  nombre_tutor: "",
+};
+
 export const context = createContext();
 
 export const Provider = ({ children }) => {
@@ -30,6 +47,8 @@ export const Provider = ({ children }) => {
   const [asistenciasAlumno, setAsistenciasAlumno] = useState(false);
   const [checked, setChecked] = useState(false);
   const [datosAlumnosRegistrados, setDatosAlumnosRegistrados] = useState([]);
+  const [editarAlumno, setEditarAlumno] = useState([]);
+  const [formAlumno, setFormAlumno] = useState(state_inicial);
 
   const handleClose = () => {
     setOpen(false);
@@ -93,6 +112,11 @@ export const Provider = ({ children }) => {
         setAsistenciasAlumno,
         datosAlumnosRegistrados,
         setDatosAlumnosRegistrados,
+        editarAlumno,
+        setEditarAlumno,
+        formAlumno,
+        setFormAlumno,
+        state_inicial,
       }}
     >
       {children}
